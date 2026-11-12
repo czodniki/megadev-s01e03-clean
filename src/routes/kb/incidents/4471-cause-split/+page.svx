@@ -1,0 +1,45 @@
+---
+layout: runbook
+title: '#4471 · two date bugs'
+owner: support desk
+status: known
+reviewed: 2026-11-12
+signature: 'v1.eyJzdWIiOiIzNDU2IiwiYXVkIjoiY2hhbGxlbmdlOndoYXQtaXQtc2hvd3MiLCJpYXQiOjE3OTQ0NzkyMjMsImV4cCI6MTc5NDU2NTYyM30.6vS2d_dPWlZ0ov7zONR4TWgiigKeFQk8fIsI_fst2_k'
+---
+
+Ticket **#4471** holds two different date problems. The component deduplicates the export by report ID before counting; every unique report in this export is merged into #4471.
+
+The desk's 5 October update says the parser was fixed and the booking-v3 hint will not be fixed because that form was retired.
+
+<script>
+  import CauseTable from '#lib/kb/CauseTable.svelte';
+  import RenderStamp from '#lib/kb/RenderStamp.svelte';
+</script>
+
+<CauseTable ticket={4471} />
+
+The table's “no ticket of its own” refers to the desk's original tracker: those reports were merged into #4471. This repo files their separate cause as issue #2.
+
+## The shared parser reads month first
+
+The shared date parser reads every date month first. Tenants in day-first locales then see the month and day flipped. These reports arrive through the app, email, and booking forms. For example, report `R-41200` says a 7 April reminder went out on 4 July.
+
+The parser cause covers every day-first tenant in the export. Intake tags do not reliably identify the cause: the table shows reports tagged `hint` that still belong to the parser group.
+
+Track the parser cause in [issue #1](https://github.com/czodniki/megadev-s01e03-clean/issues/1). The desk reports the parser fix as complete.
+
+## The booking-v3 hint tells people the wrong order
+
+The booking-v3 form prints `MM/DD/YYYY`, but its day-first tenants need `DD/MM/YYYY`. This is a separate failure from the shared parser, and appears only in form reports. It affects Alder Physio, Copper Studio, and Pale Harbour. For example, report `R-41230` from Copper Studio says the client came on 1 June instead of 6 January.
+
+These form reports need their own issue, separate from the parser issue, even though the desk merged both causes into #4471.
+
+Track the retired form-hint cause in [issue #2](https://github.com/czodniki/megadev-s01e03-clean/issues/2). The desk will not fix it because booking-v3 was retired.
+
+## Classification notes
+
+- Reports are deduplicated by report ID before counting.
+- Cause is determined by the tenant locale, form version, and channel, not by the intake tag alone.
+- The five reports the desk noted as a one-day move remain in the parser group; they do not form a third cause.
+
+<RenderStamp {signature} />

@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>#4471 · two date bugs · support kb</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      --bg: #fbfaf7; --fg: #1d1d1b; --muted: #6b6a66; --line: #e3e0d8;
+      --accent: #2f6f5e; --warn: #b4501f; --warn-bg: #fbeee6;
+      --mono: ui-monospace, 'Cascadia Code', Menlo, monospace;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root { --bg: #171716; --fg: #ecebe6; --muted: #9c9a93; --line: #34332f; --accent: #6fbfa6; --warn: #f0905d; --warn-bg: #3a2418; }
+    }
+    body { margin: 0; background: var(--bg); color: var(--fg); font: 16px/1.6 system-ui, sans-serif; }
+    .kb { max-width: 760px; margin: 0 auto; padding: 2rem 16px 4rem; }
+    .crumb { font: .8rem var(--mono); text-decoration: none; color: var(--muted); }
+    h1 { margin: .25rem 0 .5rem; line-height: 1.2; }
+    .meta { display: flex; flex-wrap: wrap; gap: .5rem 1rem; color: var(--muted); font-size: .85rem; margin: 0; }
+    .status { border: 1px solid var(--line); border-radius: 99px; padding: 0 .6rem; }
+    table { border-collapse: collapse; width: 100%; margin: 1rem 0; font-size: .92rem; }
+    th, td { border-bottom: 1px solid var(--line); padding: .35rem .5rem; text-align: left; }
+    code { font-family: var(--mono); font-size: .88em; }
+    .tags, .note { color: var(--muted); font-size: .85em; }
+    .wrong td { background: var(--warn-bg); }
+    .wrong td:last-child { color: var(--warn); font-weight: 600; }
+    footer { margin-top: 3rem; color: var(--muted); font-size: .8rem; border-top: 1px solid var(--line); padding-top: 1rem; }
+    .stamp { margin: 2rem 0 0; font: .85rem var(--mono); color: var(--muted); }
+    .stamp b { color: var(--accent); letter-spacing: .04em; }
+  </style>
+</head>
+<body>
+  <div class="kb">
+    <header>
+      <a class="crumb" href="/kb">support desk · kb</a>
+      <h1>#4471 · two date bugs</h1>
+      <p class="meta"><span>owner <b>support desk</b></span><span class="status">known</span><span>reviewed 2026-11-12</span></p>
+    </header>
+    <main>
+      <p>Ticket <strong>#4471</strong> holds two different date problems. The component deduplicates the export by report ID before counting; every unique report in this export is merged into #4471.</p>
+      <p>The desk's 5 October update says the parser was fixed and the booking-v3 hint will not be fixed because that form was retired.</p>
+      <p class="sum"><strong>412</strong> reports merged into #4471 · <strong>2</strong> causes</p>
+      <table>
+        <thead><tr><th>cause</th><th>reports</th><th>tagged as</th><th>tenants</th><th>seen</th><th></th></tr></thead>
+        <tbody>
+          <tr><td><code>parser</code></td><td>379</td><td class="tags">parser ×356 · hint ×23</td><td>11</td><td>2026-04-01 → 2026-10-04</td><td>#4471</td></tr>
+          <tr class="wrong"><td><code>hint</code></td><td>33</td><td class="tags">hint ×18 · parser ×15</td><td>3</td><td>2026-04-17 → 2026-09-22</td><td>not this ticket — no ticket of its own</td></tr>
+        </tbody>
+      </table>
+      <p class="note">“No ticket of its own” refers to the desk's original tracker: these reports were merged into #4471. This repo files their separate cause as issue #2.</p>
+      <p class="note">5 reports read as a one-day move; filed under <code>parser</code> by tenant.</p>
+
+      <h2>The shared parser reads month first</h2>
+      <p>The shared date parser reads every date month first. Tenants in day-first locales then see the month and day flipped. These reports arrive through the app, email, and booking forms. For example, report <code>R-41200</code> says a 7 April reminder went out on 4 July.</p>
+      <p>The parser cause covers every day-first tenant in the export. Intake tags do not reliably identify the cause: the table shows reports tagged <code>hint</code> that still belong to the parser group.</p>
+      <p>Track the fixed parser cause in <a href="https://github.com/czodniki/megadev-s01e03-clean/issues/1">issue #1</a>. The desk reports the parser fix as complete.</p>
+
+      <h2>The booking-v3 hint tells people the wrong order</h2>
+      <p>The booking-v3 form prints <code>MM/DD/YYYY</code>, but its day-first tenants need <code>DD/MM/YYYY</code>. This is a separate failure from the shared parser, and appears only in form reports. It affects Alder Physio, Copper Studio, and Pale Harbour. For example, report <code>R-41230</code> from Copper Studio says the client came on 1 June instead of 6 January.</p>
+      <p>These form reports need their own issue, separate from the parser issue, even though the desk merged both causes into #4471.</p>
+      <p>Track the retired form-hint cause in <a href="https://github.com/czodniki/megadev-s01e03-clean/issues/2">issue #2</a>. The desk will not fix it because booking-v3 was retired.</p>
+
+      <h2>Classification notes</h2>
+      <ul>
+        <li>Reports are deduplicated by report ID before counting.</li>
+        <li>Cause is determined by the tenant locale, form version, and channel, not by the intake tag alone.</li>
+        <li>The five reports the desk noted as a one-day move remain in the parser group; they do not form a third cause.</li>
+      </ul>
+      <p class="stamp">desk ref <b>DR-TAG9-0FPJ</b></p>
+    </main>
+    <footer>Pages are written by people. Tables and charts are built from data at render time.</footer>
+  </div>
+</body>
+</html>
